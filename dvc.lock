@@ -3,9 +3,12 @@ stages:
   split_data:
     cmd: python src/stage_02_split_data.py --config=config/config.yaml --params=params.yaml
     deps:
+    - path: artifacts/raw_local_dir/data.csv
+      md5: 7d814a1bda02145efe703f4e1c01847a
+      size: 91999
     - path: config/config.yaml
-      md5: b15f72a148d82f4538a2896ffd429430
-      size: 271
+      md5: e51994e3e6e5fb2d63a5024fc3c7e2dd
+      size: 332
     - path: src/stage_02_split_data.py
       md5: 1e4a9a327a4328c20fc570113df5ea46
       size: 1668
@@ -14,21 +17,21 @@ stages:
       size: 480
     params:
       params.yaml:
-        base.random_state: 43
+        base.random_state: 42
         base.test_size: 0.3
     outs:
     - path: artifacts/split_data_dir/test.csv
-      md5: 2234775402fc50bcee60bfbfd1cfb1d5
-      size: 27782
+      md5: 3a3eef9f920deae72cb9bcd7b91231f1
+      size: 27688
     - path: artifacts/split_data_dir/train.csv
-      md5: e683c1d146b604dc7ac3a46cfcc079c4
-      size: 64363
+      md5: 5e5a3523f0fba3925dc577c3baf2c5cd
+      size: 64457
   load_data:
     cmd: python src/stage_01_load_save.py --config=config/config.yaml
     deps:
     - path: config/config.yaml
-      md5: b15f72a148d82f4538a2896ffd429430
-      size: 271
+      md5: e51994e3e6e5fb2d63a5024fc3c7e2dd
+      size: 332
     - path: src/stage_01_load_save.py
       md5: bc9afb6c617fd9d22415df418c9d1274
       size: 1028
@@ -39,3 +42,27 @@ stages:
     - path: artifacts/raw_local_dir/data.csv
       md5: 7d814a1bda02145efe703f4e1c01847a
       size: 91999
+  train:
+    cmd: python src/stage_03_train.py --config=config/config.yaml --params=params.yaml
+    deps:
+    - path: artifacts/split_data_dir/train.csv
+      md5: 5e5a3523f0fba3925dc577c3baf2c5cd
+      size: 64457
+    - path: config/config.yaml
+      md5: e51994e3e6e5fb2d63a5024fc3c7e2dd
+      size: 332
+    - path: src/stage_03_train.py
+      md5: b19542825192ab6148556d039720b602
+      size: 1580
+    - path: src/utils/all_utils.py
+      md5: 9b741fbc628bb255d2aad4067e1a69bf
+      size: 480
+    params:
+      params.yaml:
+        base.random_state: 42
+        model_params.ElasticNet.alpha: 0.5
+        model_params.ElasticNet.l1_ratio: 0.5
+    outs:
+    - path: artifacts/model_dir/Elasticnet.Model
+      md5: cf972b0487ac1a1d8244e3daf72ff18f
+      size: 1314
